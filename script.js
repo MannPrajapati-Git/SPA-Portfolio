@@ -64,3 +64,82 @@ const observer = new IntersectionObserver((entries) => {
 }, observerOptions);
 
 document.querySelectorAll(".reveal").forEach(el => observer.observe(el));
+
+// Certificate & Drawer Modal Logic
+const certModal = document.getElementById('certModal');
+const certModalBackdrop = document.getElementById('certModalBackdrop');
+const certModalClose = document.getElementById('certModalClose');
+const certModalImg = document.getElementById('certModalImg');
+
+const openCertModal = (imgSrc) => {
+  if (!certModal) return;
+  certModalImg.src = imgSrc;
+  certModal.classList.add('open');
+  document.body.style.overflow = 'hidden';
+};
+
+const closeCertModal = () => {
+  if (!certModal) return;
+  certModal.classList.remove('open');
+  setTimeout(() => {
+    certModalImg.src = '';
+  }, 400); 
+  
+  const resultsDrawer = document.getElementById('resultsDrawer');
+  if (!resultsDrawer || !resultsDrawer.classList.contains('open')) {
+    document.body.style.overflow = '';
+  }
+};
+
+if (certModal) {
+  document.querySelectorAll('.cert-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      openCertModal(btn.getAttribute('data-img'));
+    });
+  });
+
+  certModalClose.addEventListener('click', closeCertModal);
+  certModalBackdrop.addEventListener('click', closeCertModal);
+}
+
+// Results Drawer Logic
+const resultsDrawerBtn = document.getElementById('resultsDrawerBtn');
+const resultsDrawer = document.getElementById('resultsDrawer');
+const resultsDrawerBackdrop = document.getElementById('resultsDrawerBackdrop');
+const resultsDrawerClose = document.getElementById('resultsDrawerClose');
+
+const openDrawer = () => {
+  if (!resultsDrawer) return;
+  resultsDrawer.classList.add('open');
+  document.body.style.overflow = 'hidden';
+};
+
+const closeDrawer = () => {
+  if (!resultsDrawer) return;
+  resultsDrawer.classList.remove('open');
+  if (!certModal || !certModal.classList.contains('open')) {
+    document.body.style.overflow = '';
+  }
+};
+
+if (resultsDrawer) {
+  if(resultsDrawerBtn) resultsDrawerBtn.addEventListener('click', openDrawer);
+  if(resultsDrawerClose) resultsDrawerClose.addEventListener('click', closeDrawer);
+  if(resultsDrawerBackdrop) resultsDrawerBackdrop.addEventListener('click', closeDrawer);
+
+  document.querySelectorAll('.drawer-item').forEach(item => {
+    item.addEventListener('click', () => {
+      openCertModal(item.getAttribute('data-img'));
+    });
+  });
+}
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    if (certModal && certModal.classList.contains('open')) {
+      closeCertModal();
+    } else if (resultsDrawer && resultsDrawer.classList.contains('open')) {
+      closeDrawer();
+    }
+  }
+});
